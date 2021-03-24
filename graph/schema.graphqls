@@ -1,0 +1,15 @@
+type IPLookupResult {
+  uuid: ID!
+  ip_address: String!
+  response_code: String!
+  created_at: String!
+  updated_at: String!
+}
+
+type Query {
+  getIPDetails(ip: String!): IPLookupResult!
+}
+
+type Mutation {
+  enqueue(ips: [String!]!): [String!]!
+}
