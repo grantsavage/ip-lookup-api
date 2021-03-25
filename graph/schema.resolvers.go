@@ -11,6 +11,7 @@ import (
 	"net"
 	"time"
 
+	"github.com/grantsavage/ip-lookup-api/db"
 	"github.com/grantsavage/ip-lookup-api/graph/generated"
 	"github.com/grantsavage/ip-lookup-api/graph/model"
 	"github.com/grantsavage/ip-lookup-api/services"
@@ -72,7 +73,7 @@ func (r *mutationResolver) Enqueue(ctx context.Context, ips []string) ([]string,
 			}
 
 			// Store result
-			err = services.StoreIPLookupResult(result)
+			err = db.StoreIPLookupResult(result)
 			if err != nil {
 				log.Printf("error occurred while storing result: %s\n", err.Error())
 			}
@@ -92,7 +93,7 @@ func (r *queryResolver) GetIPDetails(ctx context.Context, ip string) (*model.IPL
 	}
 
 	// Retrieve the lookup result from the database
-	result, err := services.GetIPLookupResult(validIp)
+	result, err := db.GetIPLookupResult(validIp)
 	if err != nil {
 		return nil, errors.New("error occurred while retrieving the IP lookup result: " + err.Error())
 	}

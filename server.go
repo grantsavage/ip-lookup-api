@@ -7,6 +7,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/go-chi/chi"
+	"github.com/grantsavage/ip-lookup-api/auth"
 	"github.com/grantsavage/ip-lookup-api/db"
 	"github.com/grantsavage/ip-lookup-api/graph"
 	"github.com/grantsavage/ip-lookup-api/graph/generated"
@@ -31,13 +33,17 @@ func main() {
 		log.Fatal("error setting up the database: " + err.Error())
 	}
 
+	// Setup router and middleware
+	router := chi.NewRouter()
+	router.Use(auth.Middleware)
+
 	// Create and setup new GraphQL server
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/query", srv)
 
 	// Start listening for requests
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }

@@ -1,7 +1,7 @@
 # Build stage
 FROM golang:1.16.2-alpine AS builder
 
-# Install gcc and related build utilities
+# Install gcc and related build utilities for SQLite
 RUN apk add build-base
 
 # Change working directory
