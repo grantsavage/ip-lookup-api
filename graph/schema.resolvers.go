@@ -63,6 +63,27 @@ func (r *mutationResolver) Enqueue(ctx context.Context, ips []string) ([]string,
 				return
 			}
 
+			// Attempt to retrieve existing IP lookup result
+			existingIPLookupResult, err := db.LookupResultFOrIPExists(ipAddress)
+			if err != nil {
+				log.Printf("error occurred while trying to get existing result %s", err.Error())
+				return
+			}
+
+			// If existing IP lookup result, update the response_code and updated_at fields
+			if existingIPLookupResult {
+				log.Printf("updating result for IP " + ipAddress.String())
+
+				// Store result
+				err = db.UpdateIPLookupResult(ipAddress, responseCode)
+				if err != nil {
+					log.Printf("error occurred while updating result: %s\n", err.Error())
+				}
+				return
+			}
+
+			log.Printf("storing new result for IP" + ipAddress.String())
+
 			// Bulid result
 			result := model.IPLookupResult{
 				UUID:         uuid.NewV4().String(),
@@ -96,6 +117,10 @@ func (r *queryResolver) GetIPDetails(ctx context.Context, ip string) (*model.IPL
 	result, err := db.GetIPLookupResult(validIp)
 	if err != nil {
 		return nil, errors.New("error occurred while retrieving the IP lookup result: " + err.Error())
+	}
+
+	if result == nil {
+		return nil, errors.New("could not find a result for IP " + ip)
 	}
 
 	return result, nil

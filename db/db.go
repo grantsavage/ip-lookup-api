@@ -2,8 +2,8 @@ package db
 
 import (
 	"database/sql"
-	"errors"
 	"net"
+	"time"
 
 	"github.com/grantsavage/ip-lookup-api/graph/model"
 	_ "github.com/mattn/go-sqlite3"
@@ -42,6 +42,26 @@ func SetupDatabase() error {
 	return err
 }
 
+// Check if a lookup result already exists for an IP
+func LookupResultFOrIPExists(ip net.IP) (bool, error) {
+	query := `
+	SELECT COUNT(*)
+	FROM address_results
+	WHERE ip_address = $1
+	`
+
+	rows, err := Database.Query(query, ip.String())
+	if err != nil {
+		return false, err
+	}
+
+	var count int
+	rows.Next()
+	err = rows.Scan(&count)
+
+	return count >= 1, err
+}
+
 // GeIPLookupResult gets an IP lookup result
 func GetIPLookupResult(ip net.IP) (*model.IPLookupResult, error) {
 	query := `
@@ -55,13 +75,9 @@ func GetIPLookupResult(ip net.IP) (*model.IPLookupResult, error) {
 		return nil, err
 	}
 
-	// Check if not data was returned
-	if !rows.Next() {
-		return nil, errors.New("Could not find a lookup result for IP " + ip.String())
-	}
-
 	// Normalize returned row data intro IPLookupResult
 	result := &model.IPLookupResult{}
+	rows.Next()
 	err = rows.Scan(&result.UUID, &result.IPAddress, &result.ResponseCode, &result.CreatedAt, &result.UpdatedAt)
 
 	return result, err
@@ -90,21 +106,18 @@ func StoreIPLookupResult(result model.IPLookupResult) error {
 }
 
 // UpdateIPLookupResult updates an IP lookup result
-func UpdateIPLookupResult(result model.IPLookupResult) error {
+func UpdateIPLookupResult(ip net.IP, responseCode net.IP) error {
 	query := `
-	UPDATE address_results 
-	(
-		response_code,  
-		updated_at
-	) 
+	UPDATE address_results
+	SET response_code = $2,
+		updated_at = $3
 	WHERE ip_address=$1
-	VALUES ($2, $3)
 	`
 	insertStatement, err := Database.Prepare(query)
 	if err != nil {
 		return err
 	}
 
-	_, err = insertStatement.Exec(result.ResponseCode, result.UpdatedAt)
+	_, err = insertStatement.Exec(ip, responseCode, time.Now().String())
 	return err
 }
