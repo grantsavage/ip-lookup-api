@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
 	"github.com/grantsavage/ip-lookup-api/auth"
 	"github.com/grantsavage/ip-lookup-api/db"
@@ -40,8 +39,7 @@ func main() {
 	// Create and setup new GraphQL server
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
-	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	router.Handle("/query", srv)
+	router.Handle("/graphql", srv)
 
 	// Start listening for requests
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
