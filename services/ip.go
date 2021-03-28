@@ -2,18 +2,16 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"net"
 	"strings"
 )
 
-// ReverseIP reverses the given IP
-func ReverseIP(ip net.IP) (net.IP, error) {
-	// If ip is not an IPv4 address, return empty
-	if ip.To4() == nil {
-		return nil, errors.New("Provided IP " + ip.String() + " is not an IPv4 address.")
-	}
+// Error definitions
+var ErrorInvalidIP = errors.New("provided IP is not a valid IP")
+var ErrorNonIPV4Address = errors.New("provided IP is not an IPv4 address")
 
+// ReverseIP reverses the given IP
+func ReverseIP(ip net.IP) net.IP {
 	// Split address by address delimeter
 	splitAddress := strings.Split(ip.String(), ".")
 
@@ -25,7 +23,7 @@ func ReverseIP(ip net.IP) (net.IP, error) {
 	// Join the reversed address parts
 	reversedAddress := strings.Join(splitAddress, ".")
 
-	return net.ParseIP(reversedAddress), nil
+	return net.ParseIP(reversedAddress)
 }
 
 // ValidateIPs validates and normalizes a list of IPs
@@ -37,12 +35,12 @@ func ValidateIPs(ips []string) ([]net.IP, error) {
 		// Parse and validate the IP. If IP is not valid, return an error
 		ip := net.ParseIP(ipString)
 		if ip == nil {
-			return nil, fmt.Errorf("provided IP %s is not a valid IP", ipString)
+			return nil, ErrorInvalidIP
 		}
 
 		// If ip is not an IPv4 address, return an error
 		if ip.To4() == nil {
-			return nil, fmt.Errorf("provided IP %s is not an IPv4 address", ipString)
+			return nil, ErrorNonIPV4Address
 		}
 
 		// If IP is valid, add it to list of IPs to lookup

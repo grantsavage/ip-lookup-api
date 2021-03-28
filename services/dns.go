@@ -16,6 +16,10 @@ import (
 // HostLookupFunc is a function interface for performing the host lookup
 type HostLookupFunc func(string) ([]string, error)
 
+// Error definitions
+var ErrorNoResponse = errors.New("no response from address lookup")
+var ErrorUnexpectedResponse = errors.New("response did not match expected response code")
+
 // LookupIP looks up the target IP against the DNSBL address
 func LookupIP(targetIP net.IP, dnsblAddress string, lookupFunc HostLookupFunc) (net.IP, error) {
 	// Create lookup address from target IP and DNSBL address
@@ -29,7 +33,7 @@ func LookupIP(targetIP net.IP, dnsblAddress string, lookupFunc HostLookupFunc) (
 
 	// Check the response length
 	if len(response) == 0 {
-		return nil, errors.New("no response from address lookup")
+		return nil, ErrorNoResponse
 	}
 
 	// We want just the first result from the response
@@ -41,7 +45,7 @@ func LookupIP(targetIP net.IP, dnsblAddress string, lookupFunc HostLookupFunc) (
 
 	// Check if response is valid
 	if !match {
-		return nil, errors.New("response did not match expected response code")
+		return nil, ErrorUnexpectedResponse
 	}
 
 	return net.ParseIP(ip), nil
@@ -50,15 +54,12 @@ func LookupIP(targetIP net.IP, dnsblAddress string, lookupFunc HostLookupFunc) (
 // SearchIPBlocklist normalizes the given IP and performs the blocklist lookup
 func SearchIPBlocklist(ipAddress net.IP, lookupFunc HostLookupFunc) (net.IP, error) {
 	// Reverse the IP
-	reversedIp, err := ReverseIP(ipAddress)
-	if err != nil {
-		return nil, fmt.Errorf("error occurred while reversing the IP %s: %s", ipAddress.String(), err.Error())
-	}
+	reversedIp := ReverseIP(ipAddress)
 
 	// Lookup the IP
 	responseCode, err := LookupIP(reversedIp, "zen.spamhaus.org", lookupFunc)
 	if err != nil {
-		return nil, fmt.Errorf("error occurred during IP lookup: %s", err.Error())
+		return nil, err
 	}
 
 	return responseCode, err

@@ -5,62 +5,117 @@ import (
 	"testing"
 )
 
+func assertError(t testing.TB, got error, want error) {
+	t.Helper()
+	if got == nil && want == nil {
+		return
+	}
+
+	if got == nil {
+		t.Fatal("didn't get an error but wanted one")
+	}
+
+	if got.Error() != want.Error() {
+		t.Errorf("got error %q, want %q", got, want)
+	}
+}
+
 func TestReverseIP(t *testing.T) {
-	t.Run("should return error if address is IPv6", func(t *testing.T) {
-		_, err := ReverseIP(net.ParseIP("2001:0db8:85a3:0000:0000:8a2e:0370:7334"))
-		if err == nil {
-			t.Error("expected to throw error")
-		}
-	})
+	type input struct {
+		ipAddress string
+	}
+	type want struct {
+		ipAddress string
+	}
 
-	t.Run("should reverse valid IPs", func(t *testing.T) {
-		tests := []struct {
-			input string
-			want  string
-		}{
-			{input: "1.2.3.4", want: "4.3.2.1"},
-			{input: "127.0.0.1", want: "1.0.0.127"},
-		}
+	tests := []struct {
+		description string
+		input       input
+		want        want
+	}{
+		{
+			description: "should reverse valid IP",
+			input: input{
+				ipAddress: "1.2.3.4",
+			},
+			want: want{
+				ipAddress: "4.3.2.1",
+			},
+		},
+		{
+			description: "should reverse valid IP",
+			input: input{
+				ipAddress: "127.0.0.1",
+			},
+			want: want{
+				ipAddress: "1.0.0.127",
+			},
+		},
+	}
 
-		for _, test := range tests {
-			got, err := ReverseIP(net.ParseIP(test.input))
-			if err != nil {
-				t.Error("expected to not throw error")
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			got := ReverseIP(net.ParseIP(test.input.ipAddress))
+
+			// Check response codes
+			if test.want.ipAddress != "" && got != nil && test.want.ipAddress != got.String() {
+				t.Errorf("got %s, want %s", got, test.want.ipAddress)
 			}
-			if got.String() != test.want {
-				t.Errorf("got %q want %q", got, test.want)
-			}
-		}
-	})
+		})
+	}
 }
 
 func TestValidateIPs(t *testing.T) {
-	t.Run("should return error for invalid IP", func(t *testing.T) {
-		tests := []struct {
-			input     string
-			wantError bool
-		}{
-			{input: "not an IP", wantError: true},
-			{input: "127123.0123123.0.1", wantError: true},
-		}
+	type input struct {
+		ipAddresses []string
+	}
+	type want struct {
+		err error
+	}
 
-		for _, test := range tests {
-			_, err := ValidateIPs([]string{test.input})
-			if err == nil && test.wantError {
-				t.Error("expected to return error")
+	tests := []struct {
+		description string
+		input       input
+		want        want
+	}{
+		{
+			description: "should return error for invalid IP",
+			input: input{
+				ipAddresses: []string{"not an IP"},
+			},
+			want: want{
+				err: ErrorInvalidIP,
+			},
+		},
+		{
+			description: "should return error for invalid IP",
+			input: input{
+				ipAddresses: []string{"127123.0123123.0.1"},
+			},
+			want: want{
+				err: ErrorInvalidIP,
+			},
+		},
+		{
+			description: "should return list of valid IPs",
+			input: input{
+				ipAddresses: []string{"1.2.3.4", "127.0.0.1"},
+			},
+			want: want{},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			got, err := ValidateIPs(test.input.ipAddresses)
+
+			// Check error
+			assertError(t, err, test.want.err)
+
+			// Check result
+			if err == nil && len(got) != len(test.input.ipAddresses) {
+				t.Errorf("got list of length %d, wanted %d", len(got), len(test.input.ipAddresses))
 			}
-		}
-	})
-
-	t.Run("should return valid IP list", func(t *testing.T) {
-		ips := []string{"1.2.3.4", "127.0.0.1"}
-
-		validIPs, err := ValidateIPs(ips)
-		if err != nil {
-			t.Error("expected to not return error")
-		}
-		if len(validIPs) != len(ips) {
-			t.Error("expected to return list of IPs")
-		}
-	})
+		})
+	}
 }

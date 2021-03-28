@@ -7,86 +7,136 @@ import (
 )
 
 func TestLookupIP(t *testing.T) {
-	t.Run("should return lookup result", func(t *testing.T) {
-		responseCode := "127.0.0.4"
-		lookupFunc := func(string) ([]string, error) {
-			return []string{responseCode}, nil
-		}
-		result, err := LookupIP(net.ParseIP("1.2.3.4"), "zen.spamhaus.org", lookupFunc)
-		if err != nil {
-			t.Errorf("returned error %s", err.Error())
-		}
-		if result.String() != responseCode {
-			t.Errorf("got %s, want %s", result.String(), responseCode)
-		}
-	})
+	type input struct {
+		err       error
+		ipAddress string
+		response  []string
+	}
+	type want struct {
+		err          error
+		responseCode string
+	}
 
-	t.Run("should return error if lookup failed", func(t *testing.T) {
-		lookupFunc := func(string) ([]string, error) {
-			return nil, errors.New("not connected to internet")
-		}
-		_, err := LookupIP(net.ParseIP("1.2.3.4"), "zen.spamhaus.org", lookupFunc)
-		if err == nil {
-			t.Errorf("did not return error")
-		}
-	})
+	genericLookupError := errors.New("not connected to internet")
 
-	t.Run("should return error if no response was returned", func(t *testing.T) {
-		lookupFunc := func(string) ([]string, error) {
-			return []string{}, nil
-		}
-		_, err := LookupIP(net.ParseIP("1.2.3.4"), "zen.spamhaus.org", lookupFunc)
-		if err == nil {
-			t.Errorf("did not return error")
-		}
-	})
+	tests := []struct {
+		description string
+		input       input
+		want        want
+	}{
+		{
+			description: "should return result on successful lookup",
+			input: input{
+				ipAddress: "1.2.3.4",
+				response:  []string{"127.0.0.4"},
+			},
+			want: want{
+				responseCode: "127.0.0.4",
+			},
+		},
+		{
+			description: "should return error if lookup failed",
+			input: input{
+				ipAddress: "1.2.3.4",
+				err:       genericLookupError,
+			},
+			want: want{
+				err: genericLookupError,
+			},
+		},
+		{
+			description: "should return error if no response was returned",
+			input: input{
+				ipAddress: "1.2.3.4",
+				response:  []string{},
+			},
+			want: want{
+				err: ErrorNoResponse,
+			},
+		},
+		{
+			description: "should return error if response does not match expected format",
+			input: input{
+				ipAddress: "1.2.3.4",
+				response:  []string{"123.4.5.6"},
+			},
+			want: want{
+				err: ErrorUnexpectedResponse,
+			},
+		},
+	}
 
-	t.Run("should return error if response does not match expected format", func(t *testing.T) {
-		lookupFunc := func(string) ([]string, error) {
-			return []string{"123.4.5.6"}, nil
-		}
-		_, err := LookupIP(net.ParseIP("1.2.3.4"), "zen.spamhaus.org", lookupFunc)
-		if err == nil {
-			t.Errorf("did not return error")
-		}
-	})
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			lookupFunc := func(string) ([]string, error) {
+				return test.input.response, test.input.err
+			}
+			got, err := LookupIP(net.ParseIP(test.input.ipAddress), "zen.spamhaus.org", lookupFunc)
+
+			// Check error condition
+			assertError(t, err, test.want.err)
+
+			// Check response codes
+			if test.want.responseCode != "" && got != nil && test.want.responseCode != got.String() {
+				t.Errorf("got %s, want %s", got, test.want.responseCode)
+			}
+		})
+	}
 }
 
 func TestSearchIPBlocklist(t *testing.T) {
-	t.Run("should return response code", func(t *testing.T) {
-		ipAddress := net.ParseIP("1.2.3.4")
-		responseCode := "127.0.0.4"
-		lookupFunc := func(string) ([]string, error) {
-			return []string{"127.0.0.4"}, nil
-		}
-		got, err := SearchIPBlocklist(ipAddress, lookupFunc)
-		if err != nil {
-			t.Error("returned error", err.Error())
-		}
-		if got.String() != responseCode {
-			t.Errorf("got %s, want %s", got, responseCode)
-		}
-	})
+	type input struct {
+		err       error
+		ipAddress string
+		response  []string
+	}
+	type want struct {
+		err          error
+		responseCode string
+	}
 
-	t.Run("should return error when IP reversal fails", func(t *testing.T) {
-		ipAddress := net.ParseIP("2001:0db8:85a3:0000:0000:8a2e:0370:7334")
-		lookupFunc := func(string) ([]string, error) {
-			return []string{"127.0.0.4"}, nil
-		}
-		_, err := SearchIPBlocklist(ipAddress, lookupFunc)
-		if err == nil {
-			t.Error("no error returned")
-		}
-	})
+	genericLookupError := errors.New("not connected to internet")
 
-	t.Run("should return error when lookup fails", func(t *testing.T) {
-		ipAddress := net.ParseIP("1.2.3.4")
-		lookupFunc := func(string) ([]string, error) {
-			return nil, errors.New("failed to lookup")
-		}
-		_, err := SearchIPBlocklist(ipAddress, lookupFunc)
-		if err == nil {
-			t.Error("no error returned")
-		}
-	})
+	tests := []struct {
+		description string
+		input       input
+		want        want
+	}{
+		{
+			description: "should return response code",
+			input: input{
+				ipAddress: "1.2.3.4",
+				response:  []string{"127.0.0.4"},
+			},
+			want: want{
+				responseCode: "127.0.0.4",
+			},
+		},
+		{
+			description: "should return error when lookup fails",
+			input: input{
+				err: genericLookupError,
+			},
+			want: want{
+				err: genericLookupError,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			lookupFunc := func(string) ([]string, error) {
+				return test.input.response, test.input.err
+			}
+			got, err := SearchIPBlocklist(net.ParseIP(test.input.ipAddress), lookupFunc)
+
+			// Check error condition
+			assertError(t, err, test.want.err)
+
+			// Check response codes
+			if test.want.responseCode != "" && got != nil && test.want.responseCode != got.String() {
+				t.Errorf("got %s, want %s", got, test.want.responseCode)
+			}
+		})
+	}
 }
