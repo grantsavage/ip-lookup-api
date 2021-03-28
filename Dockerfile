@@ -10,7 +10,7 @@ RUN go mod download
 # Copy rest of the source code
 COPY . ./
 # Build the executable
-RUN go build -o server
+RUN make build
 
 # Final stage
 FROM alpine
