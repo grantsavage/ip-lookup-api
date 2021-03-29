@@ -17,11 +17,11 @@ This will build the service into a `server` executable.
 ## Running
 ### Configuration
 This service will respect the following environment variables:
-|Variable Name|Description|
-|---|---|
-|PORT|The port on which to bind the server to.|
-|AUTH_USERNAME|The authorization username which requests will be authenticated against.|
-|AUTH_PASSWORD|The authorization password which requests will be authenticated against.|
+|Variable Name|Description|Default|
+|---|---|---|
+|PORT|The port on which to bind the server to.|8080|
+|AUTH_USERNAME|The username which requests will be authenticated against.||
+|AUTH_PASSWORD|The password which requests will be authenticated against.||
 
 ### Docker
 To run the service as a `docker` container and configure the necessary environment variables, use the following command:
