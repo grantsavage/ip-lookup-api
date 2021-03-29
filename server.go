@@ -23,11 +23,11 @@ func main() {
 	}
 
 	// Open connection to the database
-	db.Connect("./database.db")
-	defer db.Database.Close()
+	database := db.Connect("./database.db")
+	defer database.Close()
 
 	// Setup the database
-	err := db.SetupDatabase()
+	err := db.SetupDatabase(database)
 	if err != nil {
 		log.Fatal("error setting up the database: " + err.Error())
 	}
@@ -37,7 +37,12 @@ func main() {
 	router.Use(auth.Middleware)
 
 	// Create and setup new GraphQL server
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	config := generated.Config{
+		Resolvers: &graph.Resolver{
+			Database: database,
+		},
+	}
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(config))
 
 	router.Handle("/graphql", srv)
 

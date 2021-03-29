@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"log"
@@ -66,7 +67,7 @@ func SearchIPBlocklist(ipAddress net.IP, lookupFunc HostLookupFunc) (net.IP, err
 }
 
 // BlocklistWorker loops over a list of IPs and additionally searches and stores the lookup results
-func BlocklistWorker(ips []net.IP) {
+func BlocklistWorker(database *sql.DB, ips []net.IP) {
 	// Kick off a background task to lookup each valid IP
 	for _, ipAddress := range ips {
 		log.Printf("querying blocklist for IP address " + ipAddress.String())
@@ -90,7 +91,7 @@ func BlocklistWorker(ips []net.IP) {
 		}
 
 		// Upsert lookup result
-		err = db.UpsertIPLookupResult(result)
+		err = db.UpsertIPLookupResult(database, result)
 		if err != nil {
 			log.Printf("error occurred while storing result: %s\n", err.Error())
 		}

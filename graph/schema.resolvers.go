@@ -26,7 +26,7 @@ func (r *mutationResolver) Enqueue(ctx context.Context, ips []string) ([]string,
 	}
 
 	// Kick off background worker to process IPs
-	go dns.BlocklistWorker(validIPs)
+	go dns.BlocklistWorker(r.Database, validIPs)
 
 	return ips, nil
 }
@@ -42,7 +42,7 @@ func (r *queryResolver) GetIPDetails(ctx context.Context, ip string) (*model.IPL
 	}
 
 	// Retrieve the lookup result from the database
-	result, err := db.GetIPLookupResult(validIp)
+	result, err := db.GetIPLookupResult(r.Database, validIp)
 	if err != nil {
 		return nil, errors.New("error occurred while retrieving the IP lookup result: " + err.Error())
 	}

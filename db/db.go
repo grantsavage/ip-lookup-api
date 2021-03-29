@@ -9,20 +9,20 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var Database *sql.DB
+var ErrorNotFound error = errors.New("could not find a result for IP")
 
 // Connect opens the connection to the database
-func Connect(datastore string) {
-	// Initialize database
+func Connect(datastore string) *sql.DB {
+	// Initialize SQLite database
 	db, err := sql.Open("sqlite3", datastore)
 	if err != nil {
 		panic(err.Error())
 	}
-	Database = db
+	return db
 }
 
-// SetupDatabase sets creates the required tables for the application
-func SetupDatabase() error {
+// SetupDatabase creates the required tables for the application
+func SetupDatabase(db *sql.DB) error {
 	query := `
 	CREATE TABLE IF NOT EXISTS address_results 
 	(
@@ -33,7 +33,7 @@ func SetupDatabase() error {
 		updated_at TEXT
 	)
 	`
-	sqlStatement, err := Database.Prepare(query)
+	sqlStatement, err := db.Prepare(query)
 	if err != nil {
 		return err
 	}
@@ -43,14 +43,14 @@ func SetupDatabase() error {
 }
 
 // GeIPLookupResult gets an IP lookup result
-func GetIPLookupResult(ip net.IP) (*model.IPLookupResult, error) {
+func GetIPLookupResult(db *sql.DB, ip net.IP) (*model.IPLookupResult, error) {
 	query := `
 	SELECT uuid, ip_address, response_code, created_at, updated_at 
 	FROM address_results
 	WHERE ip_address = $1
 	LIMIT 1
 	`
-	rows, err := Database.Query(query, ip.String())
+	rows, err := db.Query(query, ip.String())
 	if err != nil {
 		return nil, err
 	}
@@ -60,26 +60,30 @@ func GetIPLookupResult(ip net.IP) (*model.IPLookupResult, error) {
 	rows.Next()
 	err = rows.Scan(&result.UUID, &result.IPAddress, &result.ResponseCode, &result.CreatedAt, &result.UpdatedAt)
 
+	// Check if no IPLookupResult was found
 	if result == nil {
-		return nil, errors.New("could not find a result for IP " + ip.String())
+		return nil, ErrorNotFound
 	}
 
 	return result, err
 }
 
-// StoreIPLookupResult stores a new IP lookup result
-func UpsertIPLookupResult(result model.IPLookupResult) error {
+// UpsertIPLookupResult upserts an IPLookupResult
+func UpsertIPLookupResult(db *sql.DB, result model.IPLookupResult) error {
+	// This will first try to insert a result, but if a conflict occurs, this is most likely
+	// because a record for the IP already exists, so instead we update the response_code and
+	// updated_at time
 	query := `
 	INSERT INTO address_results (uuid, ip_address, response_code, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5)
 	ON CONFLICT(ip_address) DO UPDATE SET response_code = $3, updated_at = $5
 	WHERE ip_address = $2;
 	`
-	insertStatement, err := Database.Prepare(query)
+	upsertStatement, err := db.Prepare(query)
 	if err != nil {
 		return err
 	}
 
-	_, err = insertStatement.Exec(result.UUID, result.IPAddress, result.ResponseCode, result.CreatedAt, result.UpdatedAt)
+	_, err = upsertStatement.Exec(result.UUID, result.IPAddress, result.ResponseCode, result.CreatedAt, result.UpdatedAt)
 	return err
 }
