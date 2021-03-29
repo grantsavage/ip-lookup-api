@@ -19,6 +19,7 @@ import (
 func (r *mutationResolver) Enqueue(ctx context.Context, ips []string) ([]string, error) {
 	log.Printf("Mutation.Enqueue invoked for %d IP(s)", len(ips))
 
+	// Validate the list of IPs
 	validIPs, err := dns.ValidateIPs(ips)
 	if err != nil {
 		log.Printf("error while validating IP addresses: %s", err)

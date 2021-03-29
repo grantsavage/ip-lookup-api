@@ -69,9 +69,9 @@ func GetIPLookupResult(db *sql.DB, ip net.IP) (*model.IPLookupResult, error) {
 
 // UpsertIPLookupResult upserts an IPLookupResult
 func UpsertIPLookupResult(db *sql.DB, result model.IPLookupResult) error {
-	// This will first try to insert a result, but if a conflict occurs, this is most likely
-	// because a record for the IP already exists, so instead we update the response_code and
-	// updated_at time
+	/* This will first try to insert a result, but if a conflict occurs, this is most likely
+	because a record for the IP already exists, so instead we update the response_code and
+	updated_at time */
 	query := `
 	INSERT INTO address_results (uuid, ip_address, response_code, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5)

@@ -1,4 +1,4 @@
-# GraphQL IP DNSBL Lookup API
+# GraphQL IP DNS Blocklist Lookup API
 
 [![Build](https://github.com/grantsavage/ip-lookup-api/actions/workflows/build.yml/badge.svg)](https://github.com/grantsavage/ip-lookup-api/actions/workflows/build.yml)
 
@@ -96,4 +96,4 @@ I did my best to separate the core concerns of the application into 4 major pack
 * [mattn/go-sqlite3](http://github.com/mattn/go-sqlite3) : Used to interact with the SQLite database.
 * [satori/go.uuid](https://github.com/satori/go.uuid) : Used to generate UUIDs for new IP lookup results.
 * [vektah/gqlparser/v2](https://github.com/vektah/gqlparser/v2) : Used in conjunction with `99designs/gqlgen`.
-* [DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock) : Use in `db` test suite.
+* [DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock) : Used in `db` test suite.
