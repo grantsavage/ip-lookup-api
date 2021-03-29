@@ -18,7 +18,7 @@ To bulid the service as a Docker container, run the following `docker` command i
 docker build -t iplookup:1.0 .
 ```
 ### Executable
-To build the service as an executable, make sure `go` version `1.16` is insalled and run:
+To build the service as an executable, make sure `go` version `1.16` is installed and run:
 ```
 make build
 ```
@@ -34,14 +34,14 @@ This service will respect the following environment variables:
 |AUTH_PASSWORD|The password which requests will be authenticated against.||
 
 ### Docker
-To run the service as a `docker` container and configure the necessary environment variables, use the following command:
+To run the service as a `docker` container and configure the necessary environment variables, first [build](#docker) the image, then use the following command:
 ```bash
 docker run -p 3000:3000 -e PORT="3000" -e AUTH_USERNAME="secureworks" AUTH_PASSWORD="supersecret" iplookup:1.0
 ```
 Optionally add the `-it` flag to view the container logs.
 
 ### Executable
-To run the executable, use the following command:
+To run the executable, first [build](#executable) the executable, then use the following command:
 ```bash
 PORT="3000" AUTH_USERNAME="secureworks" AUTH_PASSWORD="supersecret" ./server
 ```
