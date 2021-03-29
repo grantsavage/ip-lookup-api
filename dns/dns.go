@@ -1,4 +1,4 @@
-package services
+package dns
 
 import (
 	"errors"
@@ -89,8 +89,8 @@ func BlocklistWorker(ips []net.IP) {
 			UpdatedAt:    time.Now().Format(time.RFC3339),
 		}
 
-		// Insert or update lookup result
-		err = db.StoreIPLookupResult(result)
+		// Upsert lookup result
+		err = db.UpsertIPLookupResult(result)
 		if err != nil {
 			log.Printf("error occurred while storing result: %s\n", err.Error())
 		}

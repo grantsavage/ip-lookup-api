@@ -5,8 +5,8 @@ __ip-lookup-api__ is a GraphQL service that queries and stores the Spamhaus Bloc
 * [Building](#building)  
 * [Running](#running)  
 * [How to Use](#how-to-use)
-* [Project Structure](#project%20structure)
-* [Packages Used](#packages%20used)
+* [Project Structure](#project-structure)
+* [Packages Used](#packages-used)
 
 ## Building
 ### Docker
@@ -80,5 +80,16 @@ query {
 ```
 
 ## Project Structure
+I did my best to separate the core concerns of the application into 4 major packages: `auth`,`db`,`graph`, and `dns`.
+
+* `auth` : Provides the authentication mechanism and HTTP middlware for the application.
+* `db` : Provides an interface for the application to interact with the database. 
+* `graph` : Defines and implements the resolvers for the GraphQL interface.
+* `dns` : Provides methods to handle validating IP addresses and performing the DNS host lookup of an IP.
 
 ## Packages Used
+* [99designs/gqlgen](https://github.com/99designs/gqlgen): Used to implement the GraphQL interface.
+* [go-chi.chi](https://github.com/go-chi/chi) : Used to attach the authentiation middleware to the server.
+* [mattn/go-sqlite3](http://github.com/mattn/go-sqlite3) : Used to interact with the SQLite database.
+* [satori/go.uuid](https://github.com/satori/go.uuid) : Used to generate UUIDs for new IP lookup results.
+* [vektah/gqlparser/v2](https://github.com/vektah/gqlparser/v2) : Used in conjunction with `99designs/gqlgen`

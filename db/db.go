@@ -68,11 +68,11 @@ func GetIPLookupResult(ip net.IP) (*model.IPLookupResult, error) {
 }
 
 // StoreIPLookupResult stores a new IP lookup result
-func StoreIPLookupResult(result model.IPLookupResult) error {
+func UpsertIPLookupResult(result model.IPLookupResult) error {
 	query := `
 	INSERT INTO address_results (uuid, ip_address, response_code, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5)
-	ON CONFLICT(ip_address) DO UPDATE SET  response_code = $3, updated_at = $5
+	ON CONFLICT(ip_address) DO UPDATE SET response_code = $3, updated_at = $5
 	WHERE ip_address = $2;
 	`
 	insertStatement, err := Database.Prepare(query)
