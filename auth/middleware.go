@@ -27,13 +27,10 @@ func Middleware(next http.Handler) http.Handler {
 
 		// If provided credentials do not match configured credentials, throw HTTP error
 		if !ok || !checkCredentials(username, password) {
-			response, err := json.Marshal(map[string]string{
+			// No need to check the error, as this is static
+			response, _ := json.Marshal(map[string]string{
 				"errors": "Unauthorized",
 			})
-			if err != nil {
-				http.Error(w, "Internal server error", http.StatusInternalServerError)
-				return
-			}
 
 			http.Error(w, string(response), http.StatusUnauthorized)
 			return
