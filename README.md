@@ -1,4 +1,7 @@
 # GraphQL IP DNSBL Lookup API
+
+[![Build](https://github.com/grantsavage/ip-lookup-api/actions/workflows/build.yml/badge.svg)](https://github.com/grantsavage/ip-lookup-api/actions/workflows/build.yml)
+
 __ip-lookup-api__ is a GraphQL service that queries and stores the Spamhaus Blocklist for malicious IP addresses.
 
 ### Table of Contents  
