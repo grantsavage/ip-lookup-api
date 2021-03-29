@@ -25,14 +25,14 @@ This service will respect the following environment variables:
 
 ### Docker
 To run the service as a `docker` container and configure the necessary environment variables, use the following command:
-```
+```bash
 docker run -p 3000:3000 -e PORT="3000" -e AUTH_USERNAME="secureworks" AUTH_PASSWORD="supersecret" iplookup:1.0
 ```
 Optionally add the `-it` flag to view the container logs.
 
 ### Executable
 To run the executable, use the following command:
-```
+```bash
 PORT="3000" AUTH_USERNAME="secureworks" AUTH_PASSWORD="supersecret" ./server
 ```
 
@@ -42,17 +42,17 @@ The GraphQL endpoint for this service is at `/graphql`.
 
 ### Authorization Token
 First, create a basic authorization token by running the following command:
-```
+```bash
 printf "%s:%s" "secureworks" "supersecret" | base64
 ```
 Now use the generated token and set it as the `Authorization` header like so:
-``` 
+```
 Authorization: Basic <your token here>
 ```
 
 ### Enqueue
 With the authorization token set, you can enqueue IP addresses using by executing the following mutation at `/graphql`:
-```
+```graphql
 mutation {
     enqueue(ips: ["1.2.3.4"])
 }
@@ -60,7 +60,7 @@ mutation {
 
 ### Get IP Details
 With the authorization token set, you can query the lookup details of an IP by executing the following query:
-```
+```graphql
 query {
     getIPDetails(ip: "1.2.3.4") {
         uuid
