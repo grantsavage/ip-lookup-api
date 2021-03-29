@@ -89,7 +89,7 @@ func BlocklistWorker(ips []net.IP) {
 			UpdatedAt:    time.Now().Format(time.RFC3339),
 		}
 
-		// Store result
+		// Insert or update lookup result
 		err = db.StoreIPLookupResult(result)
 		if err != nil {
 			log.Printf("error occurred while storing result: %s\n", err.Error())

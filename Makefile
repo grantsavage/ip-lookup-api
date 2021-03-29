@@ -1,4 +1,4 @@
-build: lint
+build:
 	go build -o server
 
 generate: go generate ./...
