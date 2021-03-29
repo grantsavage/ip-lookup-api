@@ -10,23 +10,23 @@ import (
 	"net"
 
 	"github.com/grantsavage/ip-lookup-api/db"
+	"github.com/grantsavage/ip-lookup-api/dns"
 	"github.com/grantsavage/ip-lookup-api/graph/generated"
 	"github.com/grantsavage/ip-lookup-api/graph/model"
-	"github.com/grantsavage/ip-lookup-api/services"
 )
 
 // Enqueue looks up and stores the response codes of a given list of IPs
 func (r *mutationResolver) Enqueue(ctx context.Context, ips []string) ([]string, error) {
 	log.Printf("Mutation.Enqueue invoked for %d IP(s)", len(ips))
 
-	validIPs, err := services.ValidateIPs(ips)
+	validIPs, err := dns.ValidateIPs(ips)
 	if err != nil {
 		log.Print("error while validating IP addresses: ", err.Error())
 		return nil, err
 	}
 
 	// Kick off background worker to process IPs
-	go services.BlocklistWorker(validIPs)
+	go dns.BlocklistWorker(validIPs)
 
 	return ips, nil
 }
