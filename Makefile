@@ -20,4 +20,4 @@ run: build
 
 # Runs the application test suites
 test: lint
-	go test -v ./dns ./db ./auth
+	go test -v -covermode=count -coverprofile=coverage.out ./dns ./db ./auth
