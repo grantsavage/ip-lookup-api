@@ -1,6 +1,13 @@
 # GraphQL IP DNSBL Lookup API
 __ip-lookup-api__ is a GraphQL service that queries and stores the Spamhaus Blocklist for malicious IP addresses.
 
+### Table of Contents  
+* [Building](#building)  
+* [Running](#running)  
+* [How to Use](#how-to-use)
+* [Project Structure](#project%20structure)
+* [Packages Used](#packages%20used)
+
 ## Building
 ### Docker
 To bulid the service as a Docker container, run the following `docker` command inside the project directory:
@@ -71,3 +78,7 @@ query {
     }
 }
 ```
+
+## Project Structure
+
+## Packages Used

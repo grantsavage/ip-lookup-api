@@ -1,7 +1,6 @@
 package services
 
 import (
-	"errors"
 	"net"
 	"testing"
 )
@@ -16,8 +15,6 @@ func TestLookupIP(t *testing.T) {
 		err          error
 		responseCode string
 	}
-
-	genericLookupError := errors.New("not connected to internet")
 
 	tests := []struct {
 		description string
@@ -38,10 +35,10 @@ func TestLookupIP(t *testing.T) {
 			description: "should return error if lookup failed",
 			input: input{
 				ipAddress: "1.2.3.4",
-				err:       genericLookupError,
+				err:       net.ErrClosed,
 			},
 			want: want{
-				err: genericLookupError,
+				err: net.ErrClosed,
 			},
 		},
 		{
@@ -95,8 +92,6 @@ func TestSearchIPBlocklist(t *testing.T) {
 		responseCode string
 	}
 
-	genericLookupError := errors.New("not connected to internet")
-
 	tests := []struct {
 		description string
 		input       input
@@ -115,10 +110,10 @@ func TestSearchIPBlocklist(t *testing.T) {
 		{
 			description: "should return error when lookup fails",
 			input: input{
-				err: genericLookupError,
+				err: net.ErrClosed,
 			},
 			want: want{
-				err: genericLookupError,
+				err: net.ErrClosed,
 			},
 		},
 	}
