@@ -92,4 +92,5 @@ I did my best to separate the core concerns of the application into 4 major pack
 * [go-chi.chi](https://github.com/go-chi/chi) : Used to attach the authentiation middleware to the server.
 * [mattn/go-sqlite3](http://github.com/mattn/go-sqlite3) : Used to interact with the SQLite database.
 * [satori/go.uuid](https://github.com/satori/go.uuid) : Used to generate UUIDs for new IP lookup results.
-* [vektah/gqlparser/v2](https://github.com/vektah/gqlparser/v2) : Used in conjunction with `99designs/gqlgen`
+* [vektah/gqlparser/v2](https://github.com/vektah/gqlparser/v2) : Used in conjunction with `99designs/gqlgen`.
+* [DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock) : Use in `db` test suite.

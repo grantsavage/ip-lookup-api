@@ -12,13 +12,13 @@ import (
 var ErrorNotFound error = errors.New("could not find a result for IP")
 
 // Connect opens the connection to the database
-func Connect(datastore string) *sql.DB {
+func Connect(datastore string) (*sql.DB, error) {
 	// Initialize SQLite database
 	db, err := sql.Open("sqlite3", datastore)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
-	return db
+	return db, nil
 }
 
 // SetupDatabase creates the required tables for the application
@@ -57,13 +57,12 @@ func GetIPLookupResult(db *sql.DB, ip net.IP) (*model.IPLookupResult, error) {
 
 	// Normalize returned row data intro IPLookupResult
 	result := &model.IPLookupResult{}
-	rows.Next()
-	err = rows.Scan(&result.UUID, &result.IPAddress, &result.ResponseCode, &result.CreatedAt, &result.UpdatedAt)
 
-	// Check if no IPLookupResult was found
-	if result == nil {
+	if !rows.Next() {
 		return nil, ErrorNotFound
 	}
+
+	err = rows.Scan(&result.UUID, &result.IPAddress, &result.ResponseCode, &result.CreatedAt, &result.UpdatedAt)
 
 	return result, err
 }

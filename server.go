@@ -23,13 +23,16 @@ func main() {
 	}
 
 	// Open connection to the database
-	database := db.Connect("./database.db")
+	database, err := db.Connect("./database.db")
+	if err != nil {
+		log.Fatal("error connecting to the database", err.Error())
+	}
 	defer database.Close()
 
 	// Setup the database
-	err := db.SetupDatabase(database)
+	err = db.SetupDatabase(database)
 	if err != nil {
-		log.Fatal("error setting up the database: " + err.Error())
+		log.Fatal("error setting up the database", err.Error())
 	}
 
 	// Setup router and middleware

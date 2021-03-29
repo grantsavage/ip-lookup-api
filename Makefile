@@ -11,4 +11,4 @@ run: build
 	./server
 
 test: lint
-	go test -v -coverprofile=coverage.out ./dns ./db ./auth
+	go test -coverprofile=coverage.out ./dns ./db ./auth

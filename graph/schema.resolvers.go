@@ -21,7 +21,7 @@ func (r *mutationResolver) Enqueue(ctx context.Context, ips []string) ([]string,
 
 	validIPs, err := dns.ValidateIPs(ips)
 	if err != nil {
-		log.Print("error while validating IP addresses: ", err.Error())
+		log.Printf("error while validating IP addresses: %s", err)
 		return nil, err
 	}
 
@@ -44,7 +44,8 @@ func (r *queryResolver) GetIPDetails(ctx context.Context, ip string) (*model.IPL
 	// Retrieve the lookup result from the database
 	result, err := db.GetIPLookupResult(r.Database, validIp)
 	if err != nil {
-		return nil, errors.New("error occurred while retrieving the IP lookup result: " + err.Error())
+		log.Printf("error while retrieving lookup result: %s", err)
+		return nil, err
 	}
 
 	return result, nil
