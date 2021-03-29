@@ -35,7 +35,7 @@ func Middleware(next http.Handler) http.Handler {
 				return
 			}
 
-			http.Error(w, string(response), http.StatusForbidden)
+			http.Error(w, string(response), http.StatusUnauthorized)
 			return
 		}
 
