@@ -36,11 +36,11 @@ This will build the service into an executable named `server` and place it in th
 ## Running
 ### Configuration
 This service will respect the following environment variables:
-|Variable Name|Description|Default|
-|---|---|---|
-|PORT|The port on which to bind the server to.|8080|
-|AUTH_USERNAME|The username which requests will be authenticated against.||
-|AUTH_PASSWORD|The password which requests will be authenticated against.||
+|Variable Name|Description|Required|Default|
+|---|---|---|---|
+|PORT|The port on which to bind the server to.|No|8080|
+|AUTH_USERNAME|The username which requests will be authenticated against.|Yes||
+|AUTH_PASSWORD|The password which requests will be authenticated against.|Yes||
 
 ### Docker
 To run the service as a `docker` container and configure the necessary environment variables, first [build](#docker) the image, then use the following command:
