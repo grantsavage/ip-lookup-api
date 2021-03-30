@@ -45,7 +45,7 @@ This service will respect the following environment variables:
 ### Docker
 To run the service as a `docker` container and configure the necessary environment variables, first [build](#docker) the image, then use the following command:
 ```bash
-docker run -p 3000:3000 -e PORT="3000" -e AUTH_USERNAME="secureworks" AUTH_PASSWORD="supersecret" iplookup:1.0
+docker run -it -e PORT="8080" -e AUTH_USERNAME="secureworks" -e AUTH_PASSWORD="supersecret" -p 8080:8080 iplookup:1.0
 ```
 Optionally add the `-it` flag to view the container logs.
 

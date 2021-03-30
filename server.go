@@ -61,5 +61,6 @@ func main() {
 	router.Handle("/graphql", server)
 
 	// Start listening for requests
+	log.Printf("started GraphQL server at http://localhost:%s/graphql", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
