@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/grantsavage/ip-lookup-api/actions/workflows/build.yml/badge.svg)](https://github.com/grantsavage/ip-lookup-api/actions/workflows/build.yml) [![Coverage Status](https://coveralls.io/repos/github/grantsavage/ip-lookup-api/badge.svg?branch=main)](https://coveralls.io/github/grantsavage/ip-lookup-api?branch=main)
 
-__ip-lookup-api__ is a GraphQL service build with Go that queries and stores the Spamhaus Blocklist for malicious IP addresses.
+__ip-lookup-api__ is a GraphQL service built with Go that queries and stores the Spamhaus Blocklist for malicious IP addresses.
 
 ### Table of Contents  
 * [Building](#building)  
