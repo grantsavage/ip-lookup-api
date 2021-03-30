@@ -14,6 +14,7 @@ RUN make build
 
 # Final stage
 FROM alpine
+# Change user
 USER 0700
 # Change working directory
 WORKDIR /app

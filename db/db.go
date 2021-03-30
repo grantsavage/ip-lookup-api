@@ -9,7 +9,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var ErrorNotFound error = errors.New("could not find a result for IP")
+var ErrorNotFound error = errors.New("could not find a result for the given IP")
 
 // Connect opens the connection to the database
 func Connect(datastore string) (*sql.DB, error) {

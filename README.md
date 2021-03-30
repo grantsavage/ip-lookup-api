@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/grantsavage/ip-lookup-api/actions/workflows/build.yml/badge.svg)](https://github.com/grantsavage/ip-lookup-api/actions/workflows/build.yml) [![Coverage Status](https://coveralls.io/repos/github/grantsavage/ip-lookup-api/badge.svg?branch=main)](https://coveralls.io/github/grantsavage/ip-lookup-api?branch=main)
 
-__ip-lookup-api__ is a GraphQL service that queries and stores the Spamhaus Blocklist for malicious IP addresses.
+__ip-lookup-api__ is a GraphQL service build with Go that queries and stores the Spamhaus Blocklist for malicious IP addresses.
 
 ### Table of Contents  
 * [Building](#building)  
@@ -10,19 +10,28 @@ __ip-lookup-api__ is a GraphQL service that queries and stores the Spamhaus Bloc
 * [How to Use](#how-to-use)
 * [Project Structure](#project-structure)
 * [Packages Used](#packages-used)
+* [Tests](#tests)
 
 ## Building
+First clone the repository:
+``` 
+git clone https://github.com/grantsavage/ip-lookup-api.git && cd ip-lookup-api
+```
 ### Docker
 To bulid the service as a Docker container, run the following `docker` command inside the project directory:
 ```
 docker build -t iplookup:1.0 .
 ```
 ### Executable
-To build the service as an executable, make sure `go` version `1.16` is installed and run:
+To build the service as an executable, first make sure `go` version `1.16` is installed and install the dependencies:
+```
+go mod download
+```
+Then build the service by runnning:
 ```
 make build
 ```
-This will build the service into a `server` executable.
+This will build the service into an executable named `server` and place it in the project directory.
 
 ## Running
 ### Configuration
@@ -97,3 +106,9 @@ I did my best to separate the core concerns of the application into 4 major pack
 * [satori/go.uuid](https://github.com/satori/go.uuid) : Used to generate UUIDs for new IP lookup results.
 * [vektah/gqlparser/v2](https://github.com/vektah/gqlparser/v2) : Used in conjunction with `99designs/gqlgen`.
 * [DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock) : Used in `db` test suite.
+
+## Tests
+To run the test suites, run:
+```
+make test
+```

@@ -9,6 +9,7 @@ import (
 var configuredUsername string
 var configuredPassword string
 
+// init will read the authentication credentials from the environment
 func init() {
 	configuredUsername = os.Getenv("AUTH_USERNAME")
 	configuredPassword = os.Getenv("AUTH_PASSWORD")

@@ -26,7 +26,9 @@ func (r *mutationResolver) Enqueue(ctx context.Context, ips []string) ([]string,
 		return nil, err
 	}
 
-	// Kick off background worker to process IPs
+	/* Kick off a background worker to process IPs. Ideally if this system were
+	 * to receive a high amount of requests, I would batch the IPs and kick off a worker
+	 * for each batch of IPs to improve the concurrency. */
 	go dns.BlocklistWorker(r.Database, validIPs)
 
 	return ips, nil

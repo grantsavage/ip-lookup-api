@@ -66,7 +66,7 @@ func SearchIPBlocklist(ipAddress net.IP, lookupFunc HostLookupFunc) (net.IP, err
 	return responseCode, err
 }
 
-// BlocklistWorker loops over a list of IPs and additionally searches and stores the lookup results
+// BlocklistWorker loops over a list of IPs and additionally stores the lookup results.
 func BlocklistWorker(database *sql.DB, ips []net.IP) {
 	// Kick off a background task to lookup each valid IP
 	for _, ipAddress := range ips {
