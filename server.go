@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -13,8 +15,10 @@ import (
 	"github.com/grantsavage/ip-lookup-api/graph/generated"
 )
 
+// defaultPort is the default port to bind the server to
 const defaultPort = "8080"
 
+// main sets up the database and starts the GraphQL server
 func main() {
 	// Get and setup app configuration
 	port := os.Getenv("PORT")
@@ -45,9 +49,16 @@ func main() {
 			Database: database,
 		},
 	}
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(config))
+	server := handler.NewDefaultServer(generated.NewExecutableSchema(config))
 
-	router.Handle("/graphql", srv)
+	// Handle panics
+	server.SetRecoverFunc(func(ctx context.Context, err interface{}) error {
+		log.Printf("internal server error %s", err)
+		return errors.New("internal server error")
+	})
+
+	// Bind GraphQL server to /graphql route
+	router.Handle("/graphql", server)
 
 	// Start listening for requests
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)

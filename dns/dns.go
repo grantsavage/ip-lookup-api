@@ -21,7 +21,7 @@ type HostLookupFunc func(string) ([]string, error)
 var ErrorNoResponse = errors.New("no response from address lookup")
 var ErrorUnexpectedResponse = errors.New("response did not match expected response code")
 
-// Regular expression for validating respsponse codes
+// Regular expression for validating response codes
 var ExpectedResponsePattern = regexp.MustCompile("^127.0.0.*")
 
 // LookupIP looks up the target IP against the DNSBL address

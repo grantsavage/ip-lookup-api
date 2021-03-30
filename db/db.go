@@ -9,6 +9,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// Error definitions
 var ErrorNotFound error = errors.New("could not find a result for the given IP")
 
 // Connect opens the connection to the database

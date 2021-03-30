@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+// asserError compares 2 errors
 func assertError(t testing.TB, got error, want error) {
 	t.Helper()
 	if got == nil && want == nil {
